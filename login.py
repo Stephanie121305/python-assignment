@@ -35,7 +35,7 @@ elif option == 2:  # Login option
         #去除行尾的换行符并按逗号分隔
         #strip去除头尾指定字符，默认为空格或者换行
         #split把“hi jiayi”变成“hi”，“jiayi”
-            
+        print("Hello World")
             if len(line) == 2:  # Ensure the line has two parts (username, password)
                 file_username, file_password = line
                 if file_username == username and file_password == password:
