@@ -1,0 +1,30 @@
+Rice
+- Black Paper Chicken Chop Rice RM25.00
+- Mushroom Chicken Chop Rice RM20.00
+- Lemon Chicken Chop Rice RM21.00
+- Salted Egg Chicken Chop Rice RM23.00
+
+Noodles
+- Chicken Bolognaise Spagetti" RM22.00,
+- Carbonara Spagetti RM20.00,
+- Aglio Olio Signature RM20.00,
+- Assam Pedas Spagettic RM22.00,
+- Mac & Cheese RM25.00
+
+Crossiant
+- Chocolate Crossiant RM5.00,
+- Almond Crossiant RM15.00,
+- LNutella Crossiant RM15.00,
+- Veggie Cheese Crossiant RM18.00
+
+Sides
+- French Fries": 10.00,
+- Onion Rings": 12.00,
+- Curly Fries": 12.00,
+- Chicken Wings": 20.00
+
+Beverages
+- Coke RM5.00,
+- 100 Plus RM5.00,
+- Green Tea RM4.00,
+- Sprite RM4.00
