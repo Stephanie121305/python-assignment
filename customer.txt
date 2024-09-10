@@ -1,1 +1,2 @@
-2,2
+
+/usr/local/bin/python3 /Users/stephanie/Documents/GitHub/python-assignment/login2.0.py,/usr/local/bin/python3 /Users/stephanie/Documents/GitHub/python-assignment/login2.0.py

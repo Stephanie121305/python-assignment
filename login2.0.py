@@ -1,6 +1,8 @@
+import sys
 file_staff = "staff.txt"
 file_customer= "customer.txt"
 attempt = 3
+
 def main_menu():
     global attempt #avoid run again attempt number will change to 3
     while True:
@@ -63,13 +65,15 @@ def login_user(filename):
                 if file_username == username and file_password == password:
                     print("Login successful!")
                     found = True
+                    break #exit for for loop
         if found:
-            break            
+            break # exit for outside while loop           
         attempt -= 1
         if attempt > 0:
             print(f"Invalid username or password. You have {attempt} more attempts.")
         else:
             print("Login unsuccessful. No attempts left.")
+            sys.exit()
 
 
 def check_user_exists(filename, username):
