@@ -2,13 +2,14 @@ import sys
 file_staff = "staff.txt"
 file_customer= "customer.txt"
 attempt = 3
-
+#add额外的问题
 def main_menu():
     global attempt #avoid run again attempt number will change to 3
     while True:
         print("[1] Registration\n[2] Login")
         try:
             option = int(input("Enter your choice:"))
+            print ("-----------------------------")
         except ValueError:
             print("Please enter a valid number.")
             continue
