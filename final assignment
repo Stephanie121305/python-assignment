@@ -119,7 +119,7 @@ def update_attempts(username, remaining_attempts, file_login_attempts):
 
 def reset_attempts(username, remaining_attempts,file_login_attempts):
     """登录成功后，将 login.txt 中用户的尝试次数重置为初始值"""
-    update_attempts(username,remaining_attempts, file_login_attempts)
+    update_attempts(username, remaining_attempts, file_login_attempts)
 
 def role_menu(role):
     if role == "Admin":
