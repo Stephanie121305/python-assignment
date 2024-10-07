@@ -1,0 +1,152 @@
+def add_ingredient():
+    try:
+        name = input(f'Enter ingredient name: ')
+        quantity = int(input(f'Enter quantity: '))
+        price = float(input(f'Enter {name} price: '))
+        with open('ingredients.txt', 'a') as f:
+            f.write(f'{name},{quantity},{price}\n')
+        print(f'Ingredient: {name}, {quantity}, RM{price:.2f} added successfully')
+    except ValueError:
+        print("Input Price should be number.")
+    except Exception as e:
+        print(f'Error adding ingredient: {e}')
+
+def e_ingredient_name():
+    try:
+        with open('ingredients.txt', 'r') as f:
+            lines = f.readlines()
+        print("-- Current Ingredients --")
+        for line in lines:
+            print(line.strip())
+        old_name = input(f'\nEnter the ingredient name you want to edit: ')
+        # Set a flag to track if the ingredient is found and updated
+        updated = False
+        for line in lines:
+            if old_name in line:
+                e_name, e_qty, e_price = line.strip().split(',')
+                new_name = input(f'Enter new name for {old_name}: ')
+                updated_line = line.replace(e_name, new_name)
+                lines[lines.index(line)] = updated_line  # Update the line in the list
+                updated = True
+                break
+        if updated:
+            with open('ingredients.txt', 'w') as f:
+                f.writelines(lines)
+            print(f'Ingredient name "{old_name}" updated to "{new_name}" successfully')
+        else:
+            print(f'Ingredient "{old_name}" not found')
+    except Exception as e:
+        print(f'Error editing ingredient: {e}')
+
+def e_ingredient_qty():
+    try:
+        with open('ingredients.txt', 'r') as f:
+            lines = f.readlines()
+        print("-- Current Ingredients --")
+        for line in lines:
+            print(line.strip())
+        old_qty = input(f'\nEnter the ingredient quantity you want to edit: ')
+        updated = False
+        for line in lines:
+            if old_qty in line:
+                e_name, e_qty, e_price = line.strip().split(',')
+                new_qty = int(input(f'Enter new quantity for {old_qty}: '))
+                updated_line = line.replace(e_qty, new_qty)
+                lines[lines.index(line)] = updated_line  # Update the line in the list
+                updated = True
+                break
+        if updated:
+            with open('ingredients.txt', 'w') as f:
+                f.writelines(lines)
+            print(f'Ingredient quantity for "{old_qty}" updated to "{new_qty}" successfully')
+        else:
+            print(f'Ingredient "{old_qty}" not found')
+    except Exception as e:
+        print(f'Error editing ingredient: {e}')
+
+def e_ingredient_price():
+    with open('ingredients.txt', 'r') as f:
+        lines = f.readlines()
+    print("-- Current Ingredients --")
+    for line in lines:
+        print(line.strip())
+    old_price = input(f'\nEnter the ingredient price you want to edit: ')
+    updated = False
+    for line in lines:
+        if old_price in line:
+            e_name, e_qty, e_price = line.strip().split(',')
+            new_price = float(input(f'Enter new price for {old_price}: '))
+            updated_line = line.replace(e_price,f'{new_price:.2f}')
+            lines[lines.index(line)] = updated_line  # Update the line in the list
+            updated = True
+            break
+    if updated:
+        with open('ingredients.txt', 'w') as f:
+            f.writelines(lines)
+        print(f'Ingredient price for "{old_price}" updated to "{new_price}" successfully')
+    else:
+        print(f'Ingredient "{old_price}" not found')
+
+
+def edit_ingredient():
+    print(f'--Edit Ingredients--\n1. Name\n2. Quantity\n3. Price')
+    choice = int(input(f'Select an option: '))
+    if choice == 1:
+        e_ingredient_name()
+    elif choice == 2:
+        e_ingredient_qty()
+    elif choice == 3:
+        e_ingredient_price()
+    else:
+        print("Invalid option.")
+
+def delete_ingredient():
+    try:
+        d_name = input(f'Delete ingredient: ')
+        with open('ingredients.txt', 'r') as f:
+            lines = f.readlines()
+        with open('ingredients.txt', 'w') as f:
+            for line in lines:
+                i_name, i_qty, i_price = line.strip().split(',')
+                if i_name != d_name:
+                    f.write(line)
+            print(f'Ingredient: {d_name} deleted successfully')
+    except Exception as e:
+        print(f'Error delete ingredient: {e}')
+
+def ingredients():
+    while True:
+        print(f'--Requests--')
+        print(f'1. Add ingredients\n2. Edit ingredients\n3. Delete ingredients\n4. Exit')
+        choice = int(input(f"Select an option: "))
+        if choice == 1:
+            add_ingredient()
+        elif choice == 2:
+            edit_ingredient()
+        elif choice == 3:
+            delete_ingredient()
+        elif choice == 4:
+            break
+        else:
+            print(f'Invalid options. Select again.')
+
+def main():
+    while True:
+        print("\n--Chef Management--")
+        print(f"1. View Orders\n2. Update Order Status\n3. Requests Ingredients\n4. Update Profile\n5. Exit")
+        choice = int(input(f"Select an option: "))
+        if choice == 1:
+            pass
+        elif choice == 2:
+            pass
+        elif choice == 3:
+            ingredients()
+        elif choice == 4:
+            pass
+        elif choice == 5:
+            print(f'Exit successfully.')
+            break
+        else:
+            print(f'Invalid options. Select again.')
+
+main()
