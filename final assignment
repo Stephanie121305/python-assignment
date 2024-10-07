@@ -90,7 +90,7 @@ def check_attempts(username, file_login_attempts):
     for line in lines:
         file_username, file_attempts = line.strip().split(",")
         if file_username == username:
-            return int(file_login_attempts)
+            return int(file_attempts)
     return attempts
 
 def update_attempts(username, remaining_attempts, file_login_attempts):
@@ -106,7 +106,7 @@ def update_attempts(username, remaining_attempts, file_login_attempts):
     for line in lines:
         file_username, _ = line.strip().split(",")
         if file_username == username:
-            updated_lines.append(f"{username}, {remaining_attempts}\n")
+            updated_lines.append(f"{username},{remaining_attempts}\n")
             user_found = True
         else:
             updated_lines.append(line)
@@ -117,9 +117,9 @@ def update_attempts(username, remaining_attempts, file_login_attempts):
     with open(file_login_attempts, "w") as f:
         f.writelines(updated_lines)
 
-def reset_attempts(username, file_login_attempts):
+def reset_attempts(username, remaining_attempts,file_login_attempts):
     """登录成功后，将 login.txt 中用户的尝试次数重置为初始值"""
-    update_attempts(username, attempts, file_login_attempts)
+    update_attempts(username,remaining_attempts, file_login_attempts)
 
 def role_menu(role):
     if role == "Admin":
@@ -158,11 +158,71 @@ def role_menu(role):
                             f.write(f"{customer_username},{customer_password}\n")
                         print(f"Customer {customer_username} added successfully!")
             main_menu()
-        
-        
 
+            def edit_customer(file_customer):
+                old_customer_username = input("Enter the customer name you want to edit:")
+                old_customer_password = input("Enter the customer password you want to edit:")
+                user_found = False
+                updated_lines = []
+                with open(file_customer,"r") as f:
+                    for line in f:
+                        line = line.strip().split(",")
+                        file_customer_username, file_customer_password = line[0], line[1]
+                        if file_customer_username == old_customer_username and file_customer_password == old_customer_password:
+                            print(f"Customer {file_customer_username} found!")
+                            new_username = input("Enter the new customer username: ")
+                            new_password = input("Enter the new customer password: ")
+                            new_line = f"{new_username},{new_password}\n"
+                            updated_lines.append(new_line)
+                            user_found = True
+                        else:
+                            updated_lines.append(",".join(line) + "\n")#因为line.strip().split(",")把它分开了，这里的line是我原本的，没有要修改的再用join把他们合并起来
+                        
+                    if user_found:
+                        with open(file_customer, "w") as f:
+                            f.writelines(updated_lines)
+                        print("Customer details updated successfully!")
+                    else:
+                        print("Customer not found.")
+                main_menu()
 
-  # Function to handle viewing reports
+            def delete_customer(file_customer):
+                old_customer_username = input("Enter the customer name you want to delete:")
+                old_customer_password = input("Enter the customer password you want to delete:")
+                user_found = False
+                update_lines = []
+                with open(file_customer,"r") as f:
+                    for line in f:
+                        line = line.strip().split(",")
+                        file_customer_username, file_customer_password = line[0], line[1]
+                        if file_customer_username == old_customer_username and file_customer_password == old_customer_password:
+                            print(f"Customer {file_customer_username} found and deleted.")
+                            user_found = True
+                        else:
+                            # 将不匹配的行保留
+                            update_lines.append(",".join(line) + "\n")
+                    
+                    if user_found:
+                        with open(file_customer, "w") as f:
+                            f.writelines(update_lines)
+                        print("Customer deleted successfully!")
+                    else:
+                        print("Customer not found.")
+                main_menu()
+
+            def main_menu():
+                print("[1] Add Customer\n[2] Edit Customer\n[3] Delete Customer")
+                option = int(input("Enter your choice:"))
+
+                if option == 1:
+                    add_customer(file_customer)
+                elif option == 2:
+                    edit_customer(file_customer)
+                elif option == 3:
+                    delete_customer(file_customer)
+
+            main_menu()
+  
         elif option == "2":
             pass# Function to manage staff
         elif option == "3":
@@ -204,3 +264,7 @@ def role_menu(role):
         print("Unknown role. Please contact support.")
 
 main_menu()
+
+#order function add()quantity
+#order history import datetime, customer id, menu id, chef id, quantity, pay to comform = total price, profit based on month
+#order
