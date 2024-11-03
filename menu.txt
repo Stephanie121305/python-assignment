@@ -1,30 +1,46 @@
 Rice
-- Black Paper Chicken Chop Rice RM25.00
-- Mushroom Chicken Chop Rice RM20.00
-- Lemon Chicken Chop Rice RM21.00
-- Salted Egg Chicken Chop Rice RM23.00
-
+101 Black Paper Chicken Chop Rice - RM25.00
+102 Mushroom Chicken Chop Rice - RM20.00
+103 Lemon Chicken Chop Rice - RM21.00
+104 Salted Egg Chicken Chop Rice - RM23.00
 Noodles
-- Chicken Bolognaise Spagetti" RM22.00,
-- Carbonara Spagetti RM20.00,
-- Aglio Olio Signature RM20.00,
-- Assam Pedas Spagettic RM22.00,
-- Mac & Cheese RM25.00
-
+201 Chicken Bolognaise Spagetti - RM22.00
+202 Carbonara Spagetti - RM20.00
+203 Aglio Olio Signature - RM20.00
+204 Assam Pedas Spagettic - RM22.00
+205 Mac & Cheese - RM25.00
 Crossiant
-- Chocolate Crossiant RM5.00,
-- Almond Crossiant RM15.00,
-- LNutella Crossiant RM15.00,
-- Veggie Cheese Crossiant RM18.00
-
+301 Chocolate Crossiant - RM5.00
+302 Almond Crossiant - RM15.00
+303 LNutella Crossiant - RM15.00
+304 Veggie Cheese Crossiant - RM18.00
 Sides
-- French Fries": 10.00,
-- Onion Rings": 12.00,
-- Curly Fries": 12.00,
-- Chicken Wings": 20.00
-
+401 French Fries - 10.00
+402 Onion Rings - 12.00
+403 Curly Frie - 12.00
+404 Chicken Wings - 20.00
 Beverages
-- Coke RM5.00,
-- 100 Plus RM5.00,
-- Green Tea RM4.00,
-- Sprite RM4.00
+501 Coke - RM5.00
+502 100 Plus - RM5.00
+503 Green Tea - RM4.00
+504 Sprite - RM4.00
+505 Orange Juice - RM7.00
+Pizza
+601 Hawaii Pizza - RM20
+602 Island Pizza - RM20.00
+603 Supreme Pizza - RM23.00
+Dessert
+700 Mango Pudding - RM12.00
+702 Yam Pudding - RM12.00
+703 Chocolate Pudding - RM10.00
+704 Tiramisu Cake - RM16.00
+705 Strawberry Cake - RM13.00
+Pudding
+801 Chocolate Pudding - RM14.00
+802 Mango Pudding - RM10.00
+803 Strawberry Pudding - RM12.00
+34 sfw - RM434.00
+Western
+901 Fish&Chip - RM23.00
+902 Chicken Chop - RM20.00
+903 Beef - RM20.00
