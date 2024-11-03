@@ -758,7 +758,8 @@ def load_menu_in_dict():
                 menu_dict[category_num]["submenu"].append(line)
     return menu_dict
                 
-def add_menu(menu_dict):
+def add_menu():
+    menu_dict = load_menu_in_dict()
     try:
         while True:
             print("[1] Add new submenu\n[2] Add new category\n[3] Back to menu management system")
@@ -769,35 +770,39 @@ def add_menu(menu_dict):
                     print(f"[{category_num}] {category['name']}")
                 
                 category_choice = int(input("Enter the category number to add the new menu item to: "))
-                
-                if category_choice in menu_dict:
-                    existing_menu_id = set()  
-                    for item in menu_dict[category_choice]["submenu"]:
-                        menu_id = item.split()[0]  
-                        existing_menu_id.add(menu_id)  
-                    
-                    while True:
-                        menu_id = input("Enter the new menu ID: ").strip()
-                        if menu_id in existing_menu_id:
-                            print("This menu ID already exists. Please enter a unique menu ID.")
-                        else:
-                            break
-        
-                    menu_name = input("Enter the new food name: ").strip()
-                    menu_price = float(input("Enter the new food price: "))
-                    submenu = f"{menu_id} {menu_name} - RM{menu_price:.2f}"
+                add_new_item = True
+                while add_new_item == True:
+                    if category_choice in menu_dict:
+                        existing_menu_id = set()  
+                        for item in menu_dict[category_choice]["submenu"]:
+                            menu_id = item.split()[0]  
+                            existing_menu_id.add(menu_id)  
+                        
+                        while True:
+                            menu_id = input("Enter the new menu ID: ").strip()
+                            if menu_id in existing_menu_id:
+                                print("This menu ID already exists. Please enter a unique menu ID.")
+                            else:
+                                break
+            
+                        menu_name = input("Enter the new food name: ").strip()
+                        menu_price = float(input("Enter the new food price: "))
+                        submenu = f"{menu_id} {menu_name} - RM{menu_price:.2f}"
 
-                    menu_dict[category_choice]["submenu"].append(submenu)
-                    save_menu_to_file(menu_dict)
-                    print(f"<<<{submenu}>>> added to category '{menu_dict[category_choice]['name']}' successfully!")
+                        menu_dict[category_choice]["submenu"].append(submenu)
+                        save_menu_to_file(menu_dict)
+                        print(f"<<<{submenu}>>> added to category '{menu_dict[category_choice]['name']}' successfully!")
+                        
+                    else:
+                        print("Invalid category choice. Please enter the range of the number show in the category.")
                     
-                else:
-                    print("Invalid category choice. Please enter the range of the number show in the category.")
-                
-                choice = input("Do you want to add another menu item?\n[1] Yes\n[2] No\nEnter your choice:  ")
-                if choice != 1:
-                    break
+                    choice = input("Do you want to add another menu item?\n[1] Yes\n[2] No\nEnter your choice:  ")
+                    if choice == '1':
+                        add_new_item = True
 
+                    else:
+                        add_new_item = False
+                        break
             elif option == 2:
                 new_category = input("Enter new category name: ").strip()
                 if menu_dict:
@@ -827,7 +832,7 @@ def add_menu(menu_dict):
                     print(f"<<<{submenu}>>> added to category '{new_category}' successfully!")
 
                     continue_submenu = input("Do you want to add another submenu for this category?\n[1] Yes\n[2] No\nEnter your choice: ")
-                    if continue_submenu != 1:
+                    if continue_submenu != '1':
                         break
             
             elif option == 3:
@@ -838,7 +843,8 @@ def add_menu(menu_dict):
     except ValueError:
         print("Please enter a valid number.")
 
-def edit_menu(menu_dict):
+def edit_menu():
+    menu_dict = load_menu_in_dict()
     try:
         while True:
             print("[1] Edit Category Name\n[2] Edit Menu ID\n[3] Edit Submenu Name\n[4] Edit Price\n[5] Exit")
@@ -896,7 +902,7 @@ def edit_menu(menu_dict):
                     new_name = input("Enter the new submenu name: ").strip()
                     old_price = None
                     updated_submenu = []
-                    if menu_id == existing_menu_id:
+                    if menu_id in existing_menu_id:
                         for item in submenu:
                             if item.startswith(menu_id):
                                 old_price = item.split('-')[-1].strip()
@@ -1025,10 +1031,10 @@ def main_menu_system():
             print("[1] Add menu\n[2] Edit menu\n[3] Delete menu\n[4] Exit")
             option = int(input("Enter your choice:"))
             if option == 1:
-                add_menu(menu_dict)
+                add_menu()
                 
             elif option == 2:
-                edit_menu(menu_dict)
+                edit_menu()
                 
             elif option == 3:
                 delete_menu(menu_dict)
@@ -1062,7 +1068,7 @@ def view_ingredient():
 
 def updated_own_profile_manager(user_id):
     try:
-        print("Choose the part that you want to update:\n[1] Username\n[2] Password\n[3] Name\n[4] Email\n[5] Phone\n[6] Gender\n[7] Age\n[8] Exit")
+        print("Choose the part that you want to update:\n[1] Username\n[2] Password\n[3] Name\n[4] Email\n[5] Phone\n[6] Gender\n[7] Exit")
         option = int(input("Enter your choice:"))
         updated_lines = []
         found_user = False
@@ -1126,15 +1132,8 @@ def updated_own_profile_manager(user_id):
                             print("The new gender cannot be the same as the old one.")
                             return       
                         line_data[7] = new_gender  
-
-                    elif option == 8:
-                        new_age = input("Enter new age: ")
-                        if new_age == current_value:
-                            print("The new age cannot be the same as the old one.")
-                            return
-                        line_data[8] = new_age
                     
-                    elif option == 9:
+                    elif option == 8:
                         break
     
                     else:
@@ -1177,7 +1176,8 @@ def main_menu_manager(user_id):
                 print("Invalid option. Please choose again.")
     except ValueError:
         print("Please enter valid number")
-#Chef
+
+#Chef:
 def view_orders():
     with open(file_order,'r') as f:
         lines = f.readlines()
@@ -1859,7 +1859,7 @@ def check_progress_status():
             found = True
 
     if not found:
-        print(f"Invoice ID '{inv_id}' not found.")
+        print(f"Invoice ID '{inv_id}' not found or The order haven't pick up by chef./n Please check the invoice id enter is correct.")
 
 def add_feedback(user_id):
     rate = float(input("Enter the rate for the food(Eg.0-10):"))
