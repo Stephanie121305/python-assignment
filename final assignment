@@ -8,6 +8,7 @@ file_ingredients = "ingredients.txt"
 file_feedback = "feedback.txt"
 file_status = "status.txt"
 
+import sys
 import datetime
 def main_menu():
     while True:
@@ -34,10 +35,10 @@ def main_menu():
                     elif role == 4:
                         main_menu()
                 else:
-                    print("Invalid choice. Please enter valid number.")
+                    print("Invalid choice. Please enter 1 to 4.")
             else:
-                print("Invalid choice. Please enter valid number.")
-        except:
+                print("Invalid choice. Please enter 1 or 2.")
+        except ValueError:
             print("Invalid choice. Please enter valid number.")
 
 def register_user(file_customer):
@@ -68,15 +69,21 @@ def register_user(file_customer):
                 print("Invalid choice. Please enter 1 or 2.")
             
             if username and password:
-                user_id = ""
+                last_user_id = 0
                 with open(file_customer, "r") as f:
-                    lines = f.readlines()
-                    user_id = "R0" + str(len(lines) + 1)
+                    for line in f:
+                        if line.strip():
+                            existing_id = line.split(",")[0]
+                            id_num = int(existing_id[2:])  
+                            last_user_id = max(last_user_id, id_num)
+                
+                user_id = f"R{last_user_id + 1:02}"  
+                
                 with open(file_customer, "a") as f:
                     f.write(f"{user_id},{username},{password},{name},{email},{phone},{gender}\n")
-                    print("Registration successful!")
-                    role_menu("Customer",user_id)
-                    break
+                print("Registration successful!")
+                return login(file_customer, False)
+                    
             else:
                 print("Username or password cannot be empty.")#after customer register register successful jump to customer function
         elif choice == 3:
@@ -126,6 +133,7 @@ def login(user_file, login_attempts):
                     role_menu('Customer', user_id)
                     return True
                 else: 
+                    print("Incorrect password. Please try again.")
                     return False
 
     if not user_found:
@@ -171,10 +179,10 @@ def main_menu_admin(user_id):
                                 elif x == 3:
                                     delete_staff(file_manager, role)
                                 elif x == 4:
-                                    main_menu_admin()
+                                    main_menu_admin(user_id)
                             except ValueError:
                                 print("Invalid input. Please enter number 1 to 4")
-                            main_menu_admin()
+                            main_menu_admin(user_id)
                         elif manage == 2 :
                             try:
                                 role = "Chef"
@@ -187,15 +195,15 @@ def main_menu_admin(user_id):
                                 elif y == 3:
                                     delete_staff(file_chef, role)
                                 elif y == 4:
-                                    main_menu_admin()
+                                    main_menu_admin(user_id)
                             except ValueError:
                                 print("Invalid input. Please enter number 1 to 4")
-                            main_menu_admin()
+                            main_menu_admin(user_id)
                         elif manage == 3:
-                            main_menu_admin()
+                            main_menu_admin(user_id)
                     except ValueError:
                         print("Invalid input. Please enter number 1 to 3 ")
-                    main_menu_admin()
+                    main_menu_admin(user_id)
                 elif option == 2:
                     view_sales_admin()
                 elif option == 3:
@@ -210,23 +218,24 @@ def main_menu_admin(user_id):
             print("Invalid input. Please enter number 1 to 5")
     except ValueError:
         print("Invalid input. Please enter number 1 to 5")
-    main_menu_admin()
+    main_menu_admin(user_id)
 
 def add_staff(fileworker, role):
     while True:
         with open(fileworker, "r") as f:
             lines = f.readlines()
             if lines:
-                staff_last_line = lines[-1].strip().split(",") #last line in the staff.txt
-                last_staffID = staff_last_line[0] #first data in staff.txt
-                print(f"\n-------------------------- \nLast existing staffID: {last_staffID} \n--------------------------")
+                staff_last_line = lines[-1].strip().split(",")  # last line in the staff.txt
+                last_staffID = staff_last_line[0]  # first data in staff.txt
+                print(
+                    f"\n-------------------------- \nLast existing staffID: {last_staffID} \n--------------------------")
 
         print("\nAdding staff \n------------")
         while True:
             staffID = input(f"Enter staffID: ")
             if not staffID:
                 print("Please enter staffID, cannot leave it empty.")
-                continue #restart the loop
+                continue  # restart the loop
             found_staffID = False
             for line in lines:
                 data = line.strip().split(",")
@@ -234,7 +243,7 @@ def add_staff(fileworker, role):
                     print(f"StaffID: {staffID} in used, please use another staffID.")
                     found_staffID = True
                     break
-            if not found_staffID: #if found_staffID = false
+            if not found_staffID:  # if found_staffID = false
                 break
         while True:
             username = input("Enter username: ")
@@ -292,24 +301,24 @@ def add_staff(fileworker, role):
                 print("Please enter your years of experience, cannot leave it empty.")
 
         with open(fileworker, "a") as f:
-            f.write(f"{staffID},{username},{password},{role},{name},{email},{phone},{gender},{experience}\n") # write staffs' info to the file
+            f.write(
+                f"{staffID},{username},{password},{role},{name},{email},{phone},{gender},{experience}\n")  # write staffs' info to the file
 
         print(f"Hi, {username} with staffID:{staffID} added successfully.")
         another = input(f"Do you want to add another staff ({role})? (Y/N):").capitalize().strip()
         if another != "Y":
             print("Returning back to main menu")
-            main_menu_admin()
             break
         else:
-            add_staff(fileworker,role)
+            add_staff(fileworker, role)
 
-def edit_staff(fileworker,role):
+def edit_staff(fileworker, role):
     while True:
         staffID = input(f"Enter staffID of the staff that you want to edit: ")
         username = input("Enter username of the staff that you want to edit: ")
         try:
             with open(fileworker, "r") as f:
-                worker_lines = f.readlines() #read each line in the file into the lines list
+                worker_lines = f.readlines()  # read each line in the file into the lines list
         except FileNotFoundError:
             print(f"No staff records found")
             return
@@ -324,12 +333,13 @@ def edit_staff(fileworker,role):
             if chef_lines:
                 last_C_staffID = chef_lines[-1].strip().split(",")[0]
 
-        new_worker_lines = [] #collect all the lines tht is to write back to the file
-        staff_found = False # to find whether the staff exists
-        updated_worker = False #update the worker's details
+        new_worker_lines = []  # collect all the lines tht is to write back to the file
+        staff_found = False  # to find whether the staff exists
+        updated_worker = False  # update the worker's details
         for line in worker_lines:
-            data = line.strip().split(",") #split the line with "," and spacing
-            if data[0] == staffID and data[1] == username: #data[0] represent the first data in the list (staffID) andn data[1] is username
+            data = line.strip().split(",")  # split the line with "," and spacing
+            if data[0] == staffID and data[
+                1] == username:  # data[0] represent the first data in the list (staffID) andn data[1] is username
                 staff_found = True
                 print("\n--------------------------------")
                 print(f"StaffID:{data[0]}")
@@ -344,11 +354,13 @@ def edit_staff(fileworker,role):
                 while True:
                     try:
                         print(f"Editing details for {username} with staffID:{staffID}")
-                        print(f"1.StaffID \n2.Username \n3.Password \n4.Name \n5.Email \n6.Phone number \n7.Gender \n8.Years of experience \n9.Save and exit")
+                        print(
+                            f"1.StaffID \n2.Username \n3.Password \n4.Name \n5.Email \n6.Phone number \n7.Gender \n8.Years of experience \n9.Save and exit")
                         choice = int(input(f"Enter your choice on which you wish to edit: "))
                         if choice == 1:
                             while True:
-                                print(f"\nLast existing manager staffID: {last_M_staffID} \nLast existing chef staffID: {last_C_staffID}")
+                                print(
+                                    f"\nLast existing manager staffID: {last_M_staffID} \nLast existing chef staffID: {last_C_staffID}")
                                 new_staffID = input(f"Enter new staffID: ")
                                 if not new_staffID:
                                     print("Please enter your new staffID, don't leave it empty.")
@@ -410,7 +422,8 @@ def edit_staff(fileworker,role):
                                     if new_g == 1:
                                         new_g = "Female"
                                         if new_g == data[7]:
-                                            g = input("Your gender is same as old one, are you sure? (Y/N):").capitalize().strip()
+                                            g = input(
+                                                "Your gender is same as old one, are you sure? (Y/N):").capitalize().strip()
                                             if g == "Y":
                                                 data[7] = new_g
                                                 break
@@ -421,7 +434,8 @@ def edit_staff(fileworker,role):
                                     elif new_g == 2:
                                         new_g = "Male"
                                         if new_g == data[7]:
-                                            g = input("Your gender is same as old one, are you sure? (Y/N):").capitalize().strip()
+                                            g = input(
+                                                "Your gender is same as old one, are you sure? (Y/N):").capitalize().strip()
                                             if g == "Y":
                                                 data[7] = new_g
                                                 break
@@ -453,22 +467,21 @@ def edit_staff(fileworker,role):
             if updated_worker:
                 new_worker_lines.append(",".join(data) + "\n")
             else:
-                new_worker_lines.append(line) #write back unmodified lines
+                new_worker_lines.append(line)  # write back unmodified lines
 
         if not staff_found:
             print(f"No staff {username} with staffID {staffID} found.")
             return
 
-        with open(fileworker, "w")as f:
+        with open(fileworker, "w") as f:
             f.writelines(new_worker_lines)
 
         another = input(f"Would you like to edit another staff ({role})? (Y/N): ").capitalize().strip()
         if another != "Y":
             print("Returning to the main menu.")
             break
-    main_menu_admin()
 
-def delete_staff(fileworker,role):
+def delete_staff(fileworker, role):
     while True:
         try:
             with open(fileworker, "r") as f:
@@ -487,18 +500,15 @@ def delete_staff(fileworker,role):
                     another = input(f"Do you want to delete another staff ({role})? (Y/N):").capitalize().strip()
                     if another != "Y":
                         print("Returning to main menu.")
-                        main_menu_admin()
                         break
                 else:
                     print(f"Username: {username} with staffID: {staffID} not found")
                     another = input(f"Do you still want to delete staff ({role})?(Y/N):").capitalize().strip()
                     if another != "Y":
                         print("Returning to main menu.")
-                        main_menu_admin()
                         break
         except Exception as e:
             print(f"Error occur: {e}")
-            main_menu_admin()
             break
 
 def view_sales_admin():
@@ -507,7 +517,8 @@ def view_sales_admin():
             with open(file_status, "r") as f:
                 lines = f.readlines()
             print("\nSales report for :")
-            print("1.January \n2.February \n3.March \n4.April \n5.May \n6.June \n7.July \n8.August \n9.September \n10.October \n11.November \n12.December")
+            print(
+                "1.January \n2.February \n3.March \n4.April \n5.May \n6.June \n7.July \n8.August \n9.September \n10.October \n11.November \n12.December")
             month_wanted = int(input(f"Enter the month that you want to view sales report:"))
             chefID = input("Enter the chefID that you wish to view their sales report:")
 
@@ -516,18 +527,18 @@ def view_sales_admin():
             for line in lines:
                 data = line.strip().split(",")
                 date = data[7]
-                month = int(date.split("-")[1]) #obtain the month
+                month = int(date.split("-")[1])  # obtain the month
                 status = data[6].strip().lower()
                 if month == month_wanted and status == "completed":
                     month_data.append(data)
 
             chef_sales_data = []
             for data in month_data:
-                if data[8] == chefID:  #Check if chefID matches
+                if data[8] == chefID:  # Check if chefID matches
                     chef_sales_data.append(data)
 
             for sale in chef_sales_data:
-                total_sales += float(f"{sale[5]}")
+                total_sales += float(sale[5].replace("RM", ""))
             if chef_sales_data:
                 print(f"\nSales report for ChefID:{chefID} in Month:{month_wanted}")
                 print("-" * 50)
@@ -535,7 +546,7 @@ def view_sales_admin():
                 for sale in chef_sales_data:
                     print(f"{sale[0]:^12} {sale[5]:^15} {sale[7]:^12}")
                 print("-" * 50)
-                print(f"Total Sales: {total_sales:.2f}")
+                print(f"Total Sales: RM{total_sales:.2f}")
                 break
             else:
                 print(f"No sales found for ChefID:{chefID} in Month:{month_wanted}.")
@@ -546,10 +557,11 @@ def view_sales_admin():
 def feedback():
     while True:
         try:
-            with open(file_feedback, "r")as f:
+            with open(file_feedback, "r") as f:
                 lines = f.readlines()
             print("\nFeedback for:")
-            print("1.January \n2.February \n3.March \n4.April \n5.May \n6.June \n7.July \n8.August \n9.September \n10.October \n11.November \n12.December")
+            print(
+                "1.January \n2.February \n3.March \n4.April \n5.May \n6.June \n7.July \n8.August \n9.September \n10.October \n11.November \n12.December")
             month_wanted = int(input(f"Enter the month that you want to view the review:"))
             if 1 <= month_wanted <= 12:
                 review_month = []
@@ -583,19 +595,20 @@ def update_admin(user_id):
         return
 
     for line in admin_lines:
-        data = line.strip().split(",") #first line
+        data = line.strip().split(",")  # first line
         if data[0] == user_id:
             print("\n--------------------------------")
             print(f"Username:{data[1]}")
             print(f"Password:{data[2]}")
-            print(f"Name:{data[3]}")
-            print(f"Email:{data[4]}")
-            print(f"Phone number:{data[5]}")
-            print(f"Gender:{data[6]}")
-            print(f"Years of experience:{data[7]}")
+            print(f"Name:{data[4]}")
+            print(f"Email:{data[5]}")
+            print(f"Phone number:{data[6]}")
+            print(f"Gender:{data[7]}")
+            print(f"Years of experience:{data[8]}")
             print("-------------------------------- \n")
             while True:
-                print("=====Update own profile===== \n1.Username \n2.Password \n3.Name \n4.Email \n5.Phone number \n6.Gender \n7.Years of experience \n8.Save and Exit")
+                print(
+                    "=====Update own profile===== \n1.Username \n2.Password \n3.Name \n4.Email \n5.Phone number \n6.Gender \n7.Years of experience \n8.Save and Exit")
                 try:
                     pick = int(input("Enter your option:"))
                     if pick == 1:
@@ -626,8 +639,8 @@ def update_admin(user_id):
                             if not new_n:
                                 print("Please enter your new name, don't leave it empty.")
                                 continue
-                            if new_n != data[3]:
-                                data[3] = new_n
+                            if new_n != data[4]:
+                                data[4] = new_n
                                 break
                             else:
                                 print("New name is the same as old one. Please enter another name.")
@@ -637,8 +650,8 @@ def update_admin(user_id):
                             if not new_e:
                                 print("Please enter your new email, don't leave it empty.")
                                 continue
-                            if new_e != data[4]:
-                                data[4] = new_e
+                            if new_e != data[5]:
+                                data[5] = new_e
                                 break
                             else:
                                 print("New email is the same as old one. Please enter another email.")
@@ -648,8 +661,8 @@ def update_admin(user_id):
                             if not new_pn:
                                 print("Please enter your new phone number, don't leave it empty.")
                                 continue
-                            if new_pn != data[5]:
-                                data[5] = new_pn
+                            if new_pn != data[6]:
+                                data[6] = new_pn
                                 break
                             else:
                                 print("New phone number is the same as old one. Please enter another phone number.")
@@ -659,42 +672,41 @@ def update_admin(user_id):
                             if not new_g:
                                 print("Please enter your new gender, don't leave it empty.")
                                 continue
-                            if new_g != data[6]:
-                                data[6] = new_g
+                            if new_g != data[7]:
+                                data[7] = new_g
                                 break
                             else:
                                 g = input("Gender is the same as old one. Are you sure? (Y/N):")
                                 if g.capitalize().strip() == "Y":
                                     break
                                 elif g.capitalize().strip() == "N":
-                                    continue #restart the loop
+                                    continue  # restart the loop
                     elif pick == 7:
                         while True:
                             new_ex = input("Enter your new years of experience:")
                             if not new_ex:
                                 print("Please enter your years of experience, don't leave it empty.")
                                 continue
-                            if new_ex != data[7]:
-                                data[7] = new_ex
+                            if new_ex != data[8]:
+                                data[8] = new_ex
                                 break
                             else:
                                 ex = input("Experience is the same as old one. Are you sure? (Y/N):")
                                 if ex.capitalize().strip() == "Y":
                                     break
                                 elif ex.capitalize().strip() == "N":
-                                    continue #restart the loop
-                    elif pick == 8: #ensure this code is being executed only when it is pick
+                                    continue  # restart the loop
+                    elif pick == 8:  # ensure this code is being executed only when it is pick
                         print("Exiting update own profile.")
-                        with open(file_admin,"w") as f:
-                            f.write(",".join(data)+"\n")
+                        with open(file_admin, "w") as f:
+                            f.write(",".join(data) + "\n")
                         print("Profile updated successfully.")
                         break
                 except ValueError:
                     print("Invalid input. Please enter number 1 to 8.")
         else:
             print("No adminID found")
-
-#manager:
+#Manager:
 def manage_customer_menu():
     try:
         while True:
@@ -707,7 +719,7 @@ def manage_customer_menu():
             else:
                 print("Invalid input. Please choose 1 or 2.")
     except ValueError:
-        print("Please enter a valid number.")
+        print("Please enter an integer!")
 
 def delete_customer():
     old_customer_username = input("Enter the customer username you want to delete: ")
@@ -1053,6 +1065,9 @@ def view_ingredient():
     with open(file_ingredients,"r") as f:
         for line in f:
             line = line.strip().split(",")
+            if len(line) < 4:
+                print("Skipping incomplete line:", line)
+                continue
             ingredient, quantity, price_per_unit, total_price = line[0], line[1], line[2], line[3]
             ingredient_dict[ingredient] = {
                                     "Total quantity": int(quantity),
@@ -1137,7 +1152,7 @@ def updated_own_profile_manager(user_id):
                         break
     
                     else:
-                        print("Invalid option.")
+                        print("Invalid option. Please enter 1-8")
                         return
                     
                     updated_line = ",".join(line_data) + "\n"
@@ -1175,7 +1190,7 @@ def main_menu_manager(user_id):
             else:
                 print("Invalid option. Please choose again.")
     except ValueError:
-        print("Please enter valid number")
+        print("Please enter valid number. 1 to 5")
 
 #Chef:
 def view_orders():
@@ -1192,13 +1207,17 @@ def pickup(user_id):
             with open(file_order, 'r') as f:
                 lines = f.readlines()
             print(f'\n############################################\n**** Current Unpicked Up Orders ****\n')
-            for line in lines:
+            unassigned_orders = [line for line in lines if 'unassign' in line.split(',')[6]]
+            if not unassigned_orders:
+                print("No unassigned orders at the moment.")
+                return
+            for line in unassigned_orders:
                 order = line.strip().split(',')
-                print(f'InvoiceID: {order[0]}\nMenuID: {order[2]} /  Qty: {order[3]}\nStatus: {order[6]} / CustomerID: {order[1]}\n---------------------------------------')
+                print(f'InvoiceID: {order[0]}\nMenuID: {order[2]} / Qty: {order[3]}\nStatus: {order[6]} / CustomerID: {order[1]}\n---------------------------------------')
             p_invoice = input("Enter the InvoiceID in order to pick up order/'EXIT' to go back: ").upper()
             if p_invoice == 'EXIT':
                 return
-            p_orders = [line for line in lines if line.startswith(p_invoice + ',')]
+            p_orders = [line for line in unassigned_orders if line.startswith(p_invoice + ',')]
             if not p_orders:
                 print('No orders found with this InvoiceID.')
                 continue
@@ -1217,11 +1236,12 @@ def pickup(user_id):
                     if order[6] == 'unassign' and len(order) == 8:
                         order[6] = 'in progress'
                         order.append(user_id)
+                        updated_line = ','.join(order) + '\n'
+                        lines[lines.index(line)] = updated_line
 
                         with open(file_status, 'a') as f:
-                            f.write(','.join(order) + '\n')
+                            f.write(updated_line)
 
-                        lines.remove(line)
                         updated = True
                         print(f'Order {p_invoice} for {p_menu} is now being picked up by Chef {user_id}.')
                     else:
@@ -1229,7 +1249,7 @@ def pickup(user_id):
             if updated:
                 with open(file_order, 'w') as f:
                     f.writelines(lines)
-                another = input('Do you want to edit another ingredients?(Y/N): ').capitalize().strip()
+                another = input('Do you want to pick up another order?(Y/N): ').capitalize().strip()
                 if another == 'Y':
                     continue
                 break
@@ -1287,7 +1307,7 @@ def update_status():
             if updated:
                 with open(file_status, 'w') as f:
                     f.writelines(lines)
-                another = input('Do you want to edit another ingredients?(Y/N): ').capitalize().strip()
+                another = input('Do you want to update another order?(Y/N): ').capitalize().strip()
                 if another == 'Y':
                     continue
                 break
@@ -1320,6 +1340,7 @@ def add_ingredient():
             for line in lines:
                 e_name, e_qty, e_price, e_total = line.strip().split(',')
                 print(f'{e_name}, Qty:{e_qty}, Price per 1 unit:RM{e_price}, Total price:RM{e_total}\n')
+                     
             name = input("Enter ingredient name/'exit' to go back: ").lower()
             if not name:
                 print('Ingredient name cannot be empty. Please try again.')
@@ -1613,6 +1634,7 @@ def update_chef(user_id):
                         return
                     else:
                         print('Invalid option. Please select again.')
+                        continue
 
                     lines[lines.index(line)] = ','.join(profile) + '\n'
                     updated = True
@@ -1682,14 +1704,14 @@ def view_menu():
 
 def generate_new_invoice_id(last_invoice_id):
     if last_invoice_id:
-        last_number = int(last_invoice_id[1:])  # Extract the numeric part of the invoice ID Ixxxx
+        last_number = int(last_invoice_id[1:])
 
         if last_number >= 9999:  
-            new_invoice_id = "I0001"  # Reset to I0001 if the number exceeds 9999
+            new_invoice_id = "I0001"
         else:
-            new_invoice_id = "I" + ("0000" + str(last_number + 1))[-4:]  # Increment the last number
+            new_invoice_id = "I" + ("0000" + str(last_number + 1))[-4:]
     else:
-        new_invoice_id = "I0001"  # If there's no invoice ID, start from INV0001
+        new_invoice_id = "I0001"
 
     return new_invoice_id
 
@@ -1796,7 +1818,6 @@ def pay_conformation():
 
             new_invoice_id = generate_new_invoice_id(last_invoice_id)
 
-            # Read the orders and update "unconfirmed" entries
             with open(file_order, "r") as f:
                 orders = f.readlines()
 
@@ -1804,7 +1825,7 @@ def pay_conformation():
             for line in orders:
                 order_data = line.strip().split(",")
 
-                if len(order_data) ==8:
+                if len(order_data) == 8:
                     invoice_id = order_data[0]
                     user_id = order_data[1]
                     menu_id = order_data[2]
@@ -1814,11 +1835,9 @@ def pay_conformation():
                     status = order_data[6]
                     current_date = order_data[7]
 
-                    # Update "unconfirmed" orders with the new invoice ID
                     if invoice_id == "unconfirmed":
                         total_price_for_all_orders += float(total.replace("RM", ""))
 
-                        # Replace "unconfirmed" with the new_invoice_id
                         new_order_line = f"{new_invoice_id},{user_id},{menu_id},{quantity},{price},{total},{status},{current_date}\n"
                     else:
                         new_order_line = line
@@ -1827,12 +1846,14 @@ def pay_conformation():
                 else:
                     print(f"Skipping invalid order line: {line.strip()}")
 
-            # Write back the updated orders list to the file
-            with open(file_order, "w") as f:
-                f.writelines(updated_orders)
+            if total_price_for_all_orders > 0:
+                with open(file_order, "w") as f:
+                    f.writelines(updated_orders)
 
-            print(f"Total price is: RM{total_price_for_all_orders:.2f}")
-            print(f"Order placed successfully! Your invoice ID is {new_invoice_id}.")
+                print(f"Total price is: RM{total_price_for_all_orders:.2f}")
+                print(f"Order placed successfully! Your invoice ID is {new_invoice_id}.")
+            else:
+                print("No orders placed. Order placement failed.")
 
         except FileNotFoundError:
             print(f"Order file '{file_order}' not found.")
@@ -1850,7 +1871,7 @@ def check_progress_status():
 
     found = False
     for line in lines:
-        line = line.strip().split(",")  # Split the line by commas
+        line = line.strip().split(",")  
         if not line[0].startswith("I") or len(line) < 9:
             continue 
 
@@ -1879,12 +1900,13 @@ def update_own_profile_customer(user_id):
         for line in f:
             line_data = line.strip().split(",")
             current_data = line_data[choice]
-            
+
             if line_data[0] == user_id:
                 if choice == 1:
                     new_username = input("Enter new username: ")
                     if not new_username:
-                        print("Username cannot be empty.")
+                        print("Profile update failed: Username cannot be empty.")
+                        return
                     if new_username == current_data:
                         print("The new username cannot be the same as the old one.")
                         return
@@ -1892,40 +1914,45 @@ def update_own_profile_customer(user_id):
                 elif choice == 2:
                     new_password = input("Enter new password: ")
                     if not new_password:
-                        print("Password cannot be empty.")
-                    if new_password == current_data :
+                        print("Profile update failed: Password cannot be empty.")
+                        return
+                    if new_password == current_data:
                         print("The new password cannot be the same as the old one.")
                         return
                     line_data[2] = new_password
                 elif choice == 3:
                     new_name = input("Enter new name: ")
                     if not new_name:
-                        print("Name cannot be empty.")
-                    if new_name == current_data :
+                        print("Profile update failed: Name cannot be empty.")
+                        return
+                    if new_name == current_data:
                         print("The new name cannot be the same as the old one.")
                         return
                     line_data[3] = new_name
                 elif choice == 4:
                     new_email = input("Enter new email: ")
                     if not new_email:
-                        print("Email cannot be empty.")
-                    if new_email == current_data :
+                        print("Profile update failed: Email cannot be empty.")
+                        return
+                    if new_email == current_data:
                         print("The new email cannot be the same as the old one.")
                         return
                     line_data[4] = new_email
                 elif choice == 5:
                     new_phone = input("Enter new phone number: ")
                     if not new_phone:
-                        print("Phone cannot be empty.")
-                    if new_phone == current_data :
+                        print("Profile update failed: Phone cannot be empty.")
+                        return
+                    if new_phone == current_data:
                         print("The phone cannot be the same as the old one.")
                         return
                     line_data[5] = new_phone
                 elif choice == 6:
                     new_gender = input("Enter new gender: ")
                     if not new_gender:
-                        print("Gender cannot be empty.")
-                    if new_gender == current_data :
+                        print("Profile update failed: Gender cannot be empty.")
+                        return
+                    if new_gender == current_data:
                         print("The new gender cannot be the same as the old one.")
                         return
                     line_data[6] = new_gender
@@ -1947,13 +1974,14 @@ def update_own_profile_customer(user_id):
 def main_menu_customer(user_id):
     try:
         while True:
-            print("-"*60)
-            print("[1] View Menu\n[2] Place Order(Add, Edit, Delete)\n[3] Pay Conformation\n[4] Check Order Status\n[5] Add Feedback\n[6] Update Own Profile\n[7] Exit ")
+            print("-" * 60)
+            print(
+                "[1] View Menu\n[2] Place Order(Add, Edit, Delete)\n[3] Pay Conformation\n[4] Check Order Status\n[5] Add Feedback\n[6] Update Own Profile\n[7] Exit ")
             option = int(input("Enter your choice: "))
             if option == 1:
                 view_menu()
             elif option == 2:
-                print("-"*60)
+                print("-" * 60)
                 print("[1] Add Order\n[2] Edit Order\n[3] Delete Order\n[4] Exit")
                 choice = int(input("Enter your choice:"))
                 if choice == 1:
@@ -1986,20 +2014,22 @@ def main_menu_customer(user_id):
                 elif choice == 4:
                     break
             elif option == 3:
-                pay_conformation()  
+                pay_conformation()
             elif option == 4:
-                check_progress_status()  
+                check_progress_status()
             elif option == 5:
                 add_feedback(user_id)
             elif option == 6:
-                update_own_profile_customer(user_id)  
+                update_own_profile_customer(user_id)
             elif option == 7:
-                break
+                print("Thank you, have a nice day!")
+                sys.exit()
             else:
                 print("Invalid option. Please choose again.")
     except ValueError:
-        print("Plese enter valid number!")
+        print("Please enter valid number!")
         main_menu_customer(user_id)
+
 
 main_menu()
 
